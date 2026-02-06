@@ -13,9 +13,20 @@ public class Main {
                 break;
             }
 
-            System.out.println(cmnd + ": command not found");
+            if(cmnd.startsWith("echo")){
+                System.out.println(cmnd.substring(5) + " " );
+            }else{
+
+                System.out.println(cmnd + ": command not found");
+
+            }
+
 
         }
 
     }
+
 }
+
+
+
