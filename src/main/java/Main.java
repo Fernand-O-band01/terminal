@@ -47,8 +47,10 @@ public class Main {
 
 
                 }
+                System.out.println(cmnd + ": command not found");
+                break;
             }
-            
+
 
         }
 
