@@ -36,7 +36,7 @@ public class Main {
                 }
 
                 if (exits){
-                    System.out.println(commandToSearch + "is a shell builtin");
+                    System.out.println(commandToSearch + " is a shell builtin");
                 }else{
                     System.out.println(commandToSearch + ": not found");
                 }
