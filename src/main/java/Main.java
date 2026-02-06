@@ -1,29 +1,54 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         // TODO: Uncomment the code below to pass the first stage
         Scanner scanner = new Scanner(System.in);
-        while (true){
+
+        String[] commands = {"echo" , "type", "exit"};
+
+        while (true) {
 
             System.out.print("$ ");
             String cmnd = scanner.nextLine();
 
-            if(cmnd.equals("exit")){
+            if (cmnd.equals("exit")) {
                 break;
             }
 
-            if(cmnd.startsWith("echo")){
-                System.out.println(cmnd.substring(5) + " " );
-            }else{
+            if (cmnd.startsWith("echo ")) {
+                System.out.println(cmnd.substring(5) + " ");
+            }
 
+
+            if (cmnd.startsWith("type ")) {
+
+                String commandToSearch =  cmnd.substring(5).trim();
+                boolean exits = false;
+
+                for (String c : commands){
+                    if (commandToSearch.equals(c)){
+                        exits = true;
+                        break;
+                    }
+                }
+
+                if (exits){
+                    System.out.println(commandToSearch + "is a shell builtin");
+                }else{
+                    System.out.println(commandToSearch + ": not found");
+                }
+
+
+
+            } else {
                 System.out.println(cmnd + ": command not found");
-
             }
 
 
         }
-
     }
 
 }
