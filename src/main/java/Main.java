@@ -7,14 +7,13 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
-        // Lista de comandos internos
         String[] builtins = {"echo", "type", "exit", "grep"};
 
         while (true) {
             System.out.print("$ ");
             String input = scanner.nextLine();
 
-            if (input.equals("exit")) { // Ajustado a "exit 0" que suele pedir el tester
+            if (input.equals("exit")) {
                 break;
             }
 
@@ -32,7 +31,6 @@ public class Main {
     }
 
     private static void handleType(String cmd, String[] builtins) {
-        // 1. ¿Es builtin?
         for (String b : builtins) {
             if (cmd.equals(b)) {
                 System.out.println(cmd + " is a shell builtin");
@@ -40,7 +38,6 @@ public class Main {
             }
         }
 
-        // 2. ¿Está en el PATH?
         String pathEnv = System.getenv("PATH");
         if (pathEnv != null) {
             String[] dirs = pathEnv.split(File.pathSeparator);
@@ -53,7 +50,6 @@ public class Main {
             }
         }
 
-        // 3. No se encontró
         System.out.println(cmd + ": not found");
     }
 }
