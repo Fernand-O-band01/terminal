@@ -39,13 +39,24 @@ public class Fn {
     }
 
     // 3. Ejecuta el comando externo
-    public static boolean execute(String[] command) {
-        String commandName = command[0];
-        String fullPath = getPath(commandName); // Reutilizamos getPath
+    public static boolean execute(String[] commandWithArgs) {
+        // 1. Buscamos la ruta (getPath ya revisa en todas las carpetas del PATH)
+        String fullPath = getPath(commandWithArgs[0]);
+
         if (fullPath != null) {
             try {
-                // Aquí usamos el comando tal cual para el ProcessBuilder
-                new ProcessBuilder(command).inheritIO().start().waitFor();
+                // REGLA DE ORO: El programa espera que commandWithArgs[0] sea el nombre original
+                // o la ruta, pero ProcessBuilder necesita la ruta para arrancar.
+                // Para no romper el "Arg #0", creamos una copia o usamos la ruta directamente.
+
+                ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
+
+                // Reemplazamos SOLO para el arranque la ubicación real del archivo
+                pb.command().set(0, fullPath);
+
+                pb.inheritIO();
+                Process process = pb.start();
+                process.waitFor();
                 return true;
             } catch (Exception e) {
                 return false;
@@ -54,16 +65,6 @@ public class Fn {
         return false;
     }
 
-    public static boolean paramsQuantity(String[] command) {
-        String commandName = command[0];
-        int count = 0;
-        System.out.println("Program was passed " + command.length + " args (including program name).");
-        System.out.println("Arg #0 (program name): " + commandName);
-        for (int i = 1; i < command.length; i++) {
-            System.out.println("Arg " + "#" + i + ": " + command[i]);
-        }
 
-        return true;
-    }
 
 }
