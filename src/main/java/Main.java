@@ -1,3 +1,5 @@
+import fn.handleType;
+
 import java.util.Scanner;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -6,6 +8,7 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+
         Scanner scanner = new Scanner(System.in);
         String[] builtins = {"echo", "type", "exit", "grep"};
 
@@ -22,7 +25,7 @@ public class Main {
             }
             else if (input.startsWith("type ")) {
                 String cmdToSearch = input.substring(5).trim();
-                handleType(cmdToSearch, builtins);
+                handleType.execute(cmdToSearch, builtins);
             }
             else {
                 System.out.println(input + ": command not found");
@@ -30,26 +33,4 @@ public class Main {
         }
     }
 
-    private static void handleType(String cmd, String[] builtins) {
-        for (String b : builtins) {
-            if (cmd.equals(b)) {
-                System.out.println(cmd + " is a shell builtin");
-                return;
-            }
-        }
-
-        String pathEnv = System.getenv("PATH");
-        if (pathEnv != null) {
-            String[] dirs = pathEnv.split(File.pathSeparator);
-            for (String dir : dirs) {
-                Path fullPath = Paths.get(dir).resolve(cmd);
-                if (Files.exists(fullPath) && Files.isExecutable(fullPath)) {
-                    System.out.println(cmd + " is " + fullPath);
-                    return;
-                }
-            }
-        }
-
-        System.out.println(cmd + ": not found");
-    }
 }
