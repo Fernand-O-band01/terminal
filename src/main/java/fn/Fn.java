@@ -54,16 +54,24 @@ public class Fn {
 
         if (fullPath != null) {
             try {
-                // 1. Creamos el ProcessBuilder con el array original (donde commandWithArgs[0] es "custom_exe_...")
-                ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
+                // No tocamos commandWithArgs[0].
+                // En su lugar, creamos una lista nueva para el ProcessBuilder.
+                java.util.List<String> finalCommand = new java.util.ArrayList<>();
 
-                // 2. ¡EL TRUCO!: Le decimos al ProcessBuilder que el ejecutable REAL está en fullPath
-                // Esto NO cambia el contenido de commandWithArgs[0] para el proceso hijo.
-                pb.command().set(0, fullPath);
+                // 1. El primer elemento DEBE ser la ruta absoluta para que Java encuentre el archivo
+                finalCommand.add(fullPath);
 
+                // 2. Agregamos el RESTO de los argumentos (desde el índice 1 en adelante)
+                for (int i = 1; i < commandWithArgs.length; i++) {
+                    finalCommand.add(commandWithArgs[i]);
+                }
+
+                // 3. Ejecutamos usando la lista que tiene la ruta absoluta
+                ProcessBuilder pb = new ProcessBuilder(finalCommand);
                 pb.inheritIO();
                 Process process = pb.start();
                 process.waitFor();
+
                 return true;
             } catch (Exception e) {
                 return false;
