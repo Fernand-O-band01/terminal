@@ -62,8 +62,10 @@ public class Fn {
                 finalCommand.add(fullPath);
 
                 // 2. Agregamos el RESTO de los argumentos (desde el índice 1 en adelante)
+// Variante de "Engaño Total"
+                ProcessBuilder pbs = new ProcessBuilder(fullPath); // Ejecuta el path
                 for (int i = 1; i < commandWithArgs.length; i++) {
-                    finalCommand.add(commandWithArgs[i]);
+                    pbs.command().add(commandWithArgs[i]); // Añade los argumentos
                 }
 
                 // 3. Ejecutamos usando la lista que tiene la ruta absoluta
