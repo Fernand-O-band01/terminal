@@ -30,8 +30,8 @@ public class Main {
                     // Ejecutamos una sola vez y verificamos el resultado inmediatamente
                     boolean success = Fn.execute(commandWithArgs);
 
-                    if (!success) {
-                        System.out.println(input + ": command not found");
+                    if (!Fn.execute(commandWithArgs)) {
+                        System.out.println(commandWithArgs[0] + ": command not found");
                     }
                 }
 
