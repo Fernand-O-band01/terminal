@@ -1,10 +1,6 @@
-import fn.handleType;
+import fn.Fn;
 
 import java.util.Scanner;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.io.File;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -25,11 +21,21 @@ public class Main {
             }
             else if (input.startsWith("type ")) {
                 String cmdToSearch = input.substring(5).trim();
-                handleType.execute(cmdToSearch, builtins);
+                Fn.handleType(cmdToSearch, builtins);
             }
-            else {
-                System.out.println(input + ": command not found");
+            else{
+                String[] commandWithArgs = input.trim().split("\\s+");
+
+                if (commandWithArgs.length > 0) {
+                    // Ejecutamos una sola vez y verificamos el resultado inmediatamente
+                    boolean success = Fn.execute(commandWithArgs);
+
+                    if (!success) {
+                        System.out.println(input + ": command not found");
+                    }
+                }
             }
+
         }
     }
 
