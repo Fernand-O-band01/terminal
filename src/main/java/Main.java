@@ -23,18 +23,18 @@ public class Main {
                 String cmdToSearch = input.substring(5).trim();
                 Fn.handleType(cmdToSearch, builtins);
             }
-            else{
+            else {
                 String[] commandWithArgs = input.trim().split("\\s+");
 
                 if (commandWithArgs.length > 0) {
-                    // Ejecutamos una sola vez y verificamos el resultado inmediatamente
+                    // Ejecutamos UNA SOLA VEZ y guardamos el resultado en 'success'
                     boolean success = Fn.execute(commandWithArgs);
 
-                    if (!Fn.execute(commandWithArgs)) {
+                    // Ahora evaluamos la variable, NO volvemos a llamar a la función
+                    if (!success) {
                         System.out.println(commandWithArgs[0] + ": command not found");
                     }
                 }
-
             }
 
         }
