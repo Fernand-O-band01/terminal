@@ -49,18 +49,15 @@ public class Fn {
 
     // 3. Ejecuta el comando externo
     public static boolean execute(String[] commandWithArgs) {
-        // 1. Buscamos la ruta (getPath ya revisa en todas las carpetas del PATH)
         String fullPath = getPath(commandWithArgs[0]);
 
         if (fullPath != null) {
             try {
-                // REGLA DE ORO: El programa espera que commandWithArgs[0] sea el nombre original
-                // o la ruta, pero ProcessBuilder necesita la ruta para arrancar.
-                // Para no romper el "Arg #0", creamos una copia o usamos la ruta directamente.
-
+                // Creamos el ProcessBuilder con los argumentos originales (nombre corto)
                 ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
 
-                // Reemplazamos SOLO para el arranque la ubicación real del archivo
+                // IMPORTANTE: Le decimos al sistema que el archivo REAL está en fullPath
+                // Pero NO cambiamos commandWithArgs[0], así el programa cree que se llama solo "custom_exe..."
                 pb.command().set(0, fullPath);
 
                 pb.inheritIO();
