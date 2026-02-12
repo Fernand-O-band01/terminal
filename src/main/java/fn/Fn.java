@@ -54,4 +54,16 @@ public class Fn {
         return false;
     }
 
+    public static boolean paramsQuantity(String[] command) {
+        String commandName = command[0];
+        String[] quantity;
+        int count = 0;
+        System.out.println("Program was passed " + command.length + " args (including program name).");
+        for (String s : command) {
+            System.out.println("Args " + s);
+        }
+
+        return true;
+    }
+
 }

@@ -23,6 +23,12 @@ public class Main {
                 String cmdToSearch = input.substring(5).trim();
                 Fn.handleType(cmdToSearch, builtins);
             }
+            else if (input.contains("exe")) {
+                String[] programWithArgs = input.trim().split("\\s+");
+                if (programWithArgs.length > 0) {
+                    boolean success = Fn.paramsQuantity(programWithArgs);
+                }
+            }
             else{
                 String[] commandWithArgs = input.trim().split("\\s+");
 
