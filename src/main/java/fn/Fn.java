@@ -54,26 +54,14 @@ public class Fn {
 
         if (fullPath != null) {
             try {
-                // No tocamos commandWithArgs[0].
-                // En su lugar, creamos una lista nueva para el ProcessBuilder.
-                java.util.List<String> finalCommand = new java.util.ArrayList<>();
 
-                // 1. El primer elemento DEBE ser la ruta absoluta para que Java encuentre el archivo
-                finalCommand.add(fullPath);
+                ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
 
-                // 2. Agregamos el RESTO de los argumentos (desde el índice 1 en adelante)
-// Variante de "Engaño Total"
-                ProcessBuilder pbs = new ProcessBuilder(fullPath); // Ejecuta el path
-                for (int i = 1; i < commandWithArgs.length; i++) {
-                    pbs.command().add(commandWithArgs[i]); // Añade los argumentos
-                }
+                pb.command().set(0, fullPath);
 
-                // 3. Ejecutamos usando la lista que tiene la ruta absoluta
-                ProcessBuilder pb = new ProcessBuilder(finalCommand);
                 pb.inheritIO();
                 Process process = pb.start();
                 process.waitFor();
-
                 return true;
             } catch (Exception e) {
                 return false;
