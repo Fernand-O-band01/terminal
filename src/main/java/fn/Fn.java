@@ -49,15 +49,16 @@ public class Fn {
 
     // 3. Ejecuta el comando externo
     public static boolean execute(String[] commandWithArgs) {
-        String fullPath = getPath(commandWithArgs[0]);
+        String commandName = commandWithArgs[0];
+        String fullPath = getPath(commandName);
 
         if (fullPath != null) {
             try {
-                // Creamos el ProcessBuilder con los argumentos originales (nombre corto)
+                // 1. Creamos el ProcessBuilder con el array original (donde commandWithArgs[0] es "custom_exe_...")
                 ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
 
-                // IMPORTANTE: Le decimos al sistema que el archivo REAL está en fullPath
-                // Pero NO cambiamos commandWithArgs[0], así el programa cree que se llama solo "custom_exe..."
+                // 2. ¡EL TRUCO!: Le decimos al ProcessBuilder que el ejecutable REAL está en fullPath
+                // Esto NO cambia el contenido de commandWithArgs[0] para el proceso hijo.
                 pb.command().set(0, fullPath);
 
                 pb.inheritIO();
