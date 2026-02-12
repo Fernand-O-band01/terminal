@@ -58,9 +58,9 @@ public class Fn {
         String commandName = command[0];
         int count = 0;
         System.out.println("Program was passed " + command.length + " args (including program name).");
-        System.out.println("Args #0 (program name): " + commandName);
+        System.out.println("Arg #0 (program name): " + commandName);
         for (int i = 1; i < command.length; i++) {
-            System.out.println("Args " + "#" + i + ": " + command[i]);
+            System.out.println("Arg " + "#" + i + ": " + command[i]);
         }
 
         return true;
