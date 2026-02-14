@@ -16,9 +16,10 @@ public class Fn {
         for (String directory : directories) {
             // Creamos la ruta completa al archivo
             Path fullPath = Paths.get(directory).resolve(command);
+            File file = new File(directory, command);
 
             // Verificamos si existe y si se puede ejecutar
-            if (Files.exists(fullPath) && Files.isRegularFile(fullPath)) {
+            if (Files.exists(fullPath) && Files.isRegularFile(fullPath) && file.canExecute()) {
                 return fullPath.toString();
             }
 
