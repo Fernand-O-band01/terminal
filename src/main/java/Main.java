@@ -24,7 +24,7 @@ public class Main {
                 if(Fn.handleType(cmdToSearch, builtins)){
                 }
                 else{
-                    System.out.println(cmdToSearch + ": command not found");
+                    System.out.println(cmdToSearch + ": not found");
                 }
             }
             else {
