@@ -8,24 +8,18 @@ import java.nio.file.Paths;
 public class Fn {
 
     // 1. Solo busca en el PATH y devuelve la ruta
+
     public static String getPath(String command) {
-        String pathEnv = System.getenv("PATH"); // Esto lee /tmp/fox y el resto
+        String pathEnv = System.getenv("PATH");
         if (pathEnv == null) return null;
 
         String[] directories = pathEnv.split(File.pathSeparator);
         for (String directory : directories) {
-            // Creamos la ruta completa al archivo
-            Path fullPath = Paths.get(directory).resolve(command);
+            File file = new File(directory, command);
 
-            // Verificamos si existe y si se puede ejecutar
-            if (Files.exists(fullPath) && Files.isRegularFile(fullPath)) {
-                return fullPath.toString();
-            }
-
-            // También probamos con .exe por si estás en Windows localmente
-            Path fullPathExe = Paths.get(directory).resolve(command + ".exe");
-            if (Files.exists(fullPathExe) && Files.isRegularFile(fullPathExe)) {
-                return fullPathExe.toString();
+            // La clave está en añadir: file.canExecute()
+            if (file.exists() && file.canExecute() && !file.isDirectory()) {
+                return file.getAbsolutePath();
             }
         }
         return null;
@@ -55,9 +49,6 @@ public class Fn {
             try {
 
                 ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
-
-                //pb.command().set(0, fullPath);
-
                 pb.inheritIO();
                 Process process = pb.start();
                 process.waitFor();
