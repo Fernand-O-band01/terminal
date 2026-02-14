@@ -32,6 +32,10 @@ public class Fn {
         return null;
     }
 
+    public static void currentDirectory() {
+        System.out.println(System.getProperty("user.dir"));
+    }
+
     // 2. Lógica para el comando 'type'
     public static boolean handleType(String cmd, String[] builtins) {
         for (String b : builtins) {

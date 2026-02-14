@@ -16,6 +16,8 @@ public class Main {
                 break;
             }
 
+
+
             if (input.startsWith("echo ")) {
                 System.out.println(input.substring(5).trim());
             }
@@ -26,6 +28,8 @@ public class Main {
                 else{
                     System.out.println(cmdToSearch + ": not found");
                 }
+            }else if(input.equals("pwd")){
+                Fn.currentDirectory();
             }
             else {
                 String[] commandWithArgs = input.trim().split("\\s+");
