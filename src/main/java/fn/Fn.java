@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 
 public class Fn {
 
+    private static Path currentPath = Paths.get(System.getProperty("user.dir")).toAbsolutePath();
+
     // 1. Solo busca en el PATH y devuelve la ruta
     public static String getPath(String command) {
         String pathEnv = System.getenv("PATH"); // Esto lee /tmp/fox y el resto
@@ -30,6 +32,31 @@ public class Fn {
             }
         }
         return null;
+    }
+
+    public static boolean ChangeDirectory(String[] command){
+        if (command.length < 2) return false;
+
+        String target = command[1];
+        Path newPath;
+
+        if (target.equals("~")) {
+            // Ir al HOME del usuario
+            newPath = Paths.get(System.getenv("HOME"));
+        } else {
+            // Resolver la ruta (funciona para rutas relativas como 'docs' o absolutas como '/tmp')
+            newPath = currentPath.resolve(target).normalize();
+        }
+
+        // Verificar si la carpeta existe
+        if (Files.exists(newPath) && Files.isDirectory(newPath)) {
+            currentPath = newPath;
+            // Actualizamos la propiedad de Java para que pwd también se entere
+            System.setProperty("user.dir", currentPath.toString());
+        } else {
+            System.out.println("cd: " + target + ": No such file or directory");
+        }
+        return false;
     }
 
     public static void currentDirectory() {
@@ -60,6 +87,7 @@ public class Fn {
             try {
 
                 ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
+                pb.directory(new java.io.File(System.getProperty("user.dir")));
                 pb.inheritIO();
                 Process process = pb.start();
                 process.waitFor();

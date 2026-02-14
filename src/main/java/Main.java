@@ -6,11 +6,13 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Scanner scanner = new Scanner(System.in);
-        String[] builtins = {"echo", "type", "exit", "grep", "pwd"};
+        String[] builtins = {"echo", "type", "exit", "grep", "pwd", "cd"};
 
         while (true) {
+
             System.out.print("$ ");
             String input = scanner.nextLine();
+            String[] commandWithArgs = input.trim().split("\\s+");
 
             if (input.equals("exit")) {
                 break;
@@ -30,9 +32,10 @@ public class Main {
                 }
             }else if(input.equals("pwd")){
                 Fn.currentDirectory();
+            }else if (input.startsWith("cd ")) {
+                if(Fn.ChangeDirectory(commandWithArgs)){}
             }
             else {
-                String[] commandWithArgs = input.trim().split("\\s+");
 
                 if (commandWithArgs.length > 0) {
                     // Ejecutamos UNA SOLA VEZ y guardamos el resultado en 'success'
