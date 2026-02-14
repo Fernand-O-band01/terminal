@@ -49,15 +49,14 @@ public class Fn {
 
     // 3. Ejecuta el comando externo
     public static boolean execute(String[] commandWithArgs) {
-        String commandName = commandWithArgs[0];
-        String fullPath = getPath(commandName);
+        String fullPath = getPath(commandWithArgs[0]);
 
         if (fullPath != null) {
             try {
 
                 ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
 
-                pb.command().set(0, fullPath);
+                //pb.command().set(0, fullPath);
 
                 pb.inheritIO();
                 Process process = pb.start();
