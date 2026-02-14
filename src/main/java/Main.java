@@ -21,8 +21,9 @@ public class Main {
             }
             else if (input.startsWith("type ")) {
                 String cmdToSearch = input.substring(5).trim();
-                Fn.handleType(cmdToSearch, builtins);
-                if(!Fn.handleType(cmdToSearch, builtins)){
+                if(Fn.handleType(cmdToSearch, builtins)){
+                }
+                else{
                     System.out.println(cmdToSearch + ": command not found");
                 }
             }
