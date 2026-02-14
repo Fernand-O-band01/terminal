@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Scanner scanner = new Scanner(System.in);
-        String[] builtins = {"echo", "type", "exit", "grep"};
+        String[] builtins = {"echo", "type", "exit", "grep", "pwd"};
 
         while (true) {
             System.out.print("$ ");
