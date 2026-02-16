@@ -169,14 +169,49 @@ public class Fn {
 
     // 3. Ejecuta el comando externo
     public static boolean execute(String[] commandWithArgs) {
-        String fullPath = getPath(commandWithArgs[0]);
+        // 1. Separamos el comando de la redirección
+        List<String> cleanCommand = new ArrayList<>();
+        File outputFile = null;
+        boolean redirecting = false;
+
+        for (int i = 0; i < commandWithArgs.length; i++) {
+            // Detectamos el operador de redirección
+            // (En Shells reales también existe "1>", aquí asumimos ">")
+            if (commandWithArgs[i].equals(">") || commandWithArgs[i].equals("1>")) {
+                if (i + 1 < commandWithArgs.length) {
+                    outputFile = new File(commandWithArgs[i + 1]);
+                    redirecting = true;
+                    i++; // Saltamos el nombre del archivo para no agregarlo al comando
+                }
+            } else {
+                cleanCommand.add(commandWithArgs[i]);
+            }
+        }
+
+        // Convertimos la lista limpia de vuelta a Array
+        String[] finalCommand = cleanCommand.toArray(new String[0]);
+
+        // Buscamos el ejecutable (usando el nombre limpio, ej: "ls")
+        String fullPath = getPath(finalCommand[0]);
 
         if (fullPath != null) {
             try {
+                ProcessBuilder pb = new ProcessBuilder(finalCommand);
+                pb.directory(new File(System.getProperty("user.dir"))); // Mantenemos tu lógica de CD
 
-                ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
-                pb.directory(new java.io.File(System.getProperty("user.dir")));
-                pb.inheritIO();
+                if (redirecting && outputFile != null) {
+                    // CASO REDIRECCIÓN:
+                    // 1. stdout va al archivo
+                    pb.redirectOutput(outputFile);
+                    // 2. stderr se queda en la consola (importante para errores)
+                    pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+                    // 3. stdin (entrada) no cambia
+                    pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
+                } else {
+                    // CASO NORMAL: Todo a la consola
+                    pb.inheritIO();
+                }
+
                 Process process = pb.start();
                 process.waitFor();
                 return true;
@@ -185,8 +220,7 @@ public class Fn {
             }
         }
         return false;
+
     }
-
-
 
 }
