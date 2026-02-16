@@ -39,67 +39,68 @@ public class Fn {
     }
 
     public static String[] parseArguments(String input) {
-        java.util.List<String> args = new java.util.ArrayList<>();
+        List<String> args = new ArrayList<>();
         StringBuilder currentArg = new StringBuilder();
         boolean inSingleQuotes = false;
         boolean inDoubleQuotes = false;
 
-        // Este flag sirve para detectar cadenas vacías explícitas como "" o ''
-        // Si abrimos comillas, ya cuenta como que "tocamos" el argumento.
-        boolean touchedArg = false;
-
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
 
-            if (inSingleQuotes) {
-                if (c == '\'') {
-                    inSingleQuotes = false; // Cerramos comilla simple
-                } else {
-                    currentArg.append(c);   // Todo lo de adentro se guarda literal
+            // 1. MANEJO DE LA BARRA INVERTIDA (\)
+            if (c == '\\') {
+                // Caso A: Dentro de comillas simples
+                if (inSingleQuotes) {
+                    // En '...', la barra NO es especial. Se guarda tal cual.
+                    currentArg.append(c);
                 }
-            } else if (inDoubleQuotes) {
-                if (c == '\"') {
-                    inDoubleQuotes = false; // Cerramos comilla doble
-                } else if (c == '\\') {
-                    // (Opcional) Aquí iría la lógica de escapes dentro de dobles comillas
-                    // Para este test en específico, a veces hay que manejar \" o \\
-                    // Si el test te falla con backslash, avísame para agregar eso.
+                // Caso B: Dentro de comillas dobles
+                else if (inDoubleQuotes) {
+                    // En "...", la barra solo escapa caracteres especiales como \ $ " o newline
                     if (i + 1 < input.length()) {
                         char nextChar = input.charAt(i + 1);
-                        // Escapar solo caracteres especiales si es necesario
-                        currentArg.append(nextChar);
-                        i++;
+                        if (nextChar == '\\' || nextChar == '"' || nextChar == '$' || nextChar == '\n') {
+                            currentArg.append(nextChar);
+                            i++; // Saltamos el carácter escapado
+                        } else {
+                            // Si no es especial, la barra se queda (ej: "\a" -> "\a")
+                            currentArg.append(c);
+                        }
                     } else {
                         currentArg.append(c);
                     }
-                } else {
-                    currentArg.append(c);
                 }
-            } else {
-                // NO estamos entre comillas
-                if (c == '\'') {
-                    inSingleQuotes = true;
-                    touchedArg = true; // Marcamos que este argumento existe (aunque esté vacío)
-                } else if (c == '\"') {
-                    inDoubleQuotes = true;
-                    touchedArg = true;
-                } else if (c == ' ') {
-                    // El espacio FUERA de comillas es lo único que separa argumentos
-                    if (currentArg.length() > 0 || touchedArg) {
-                        args.add(currentArg.toString());
-                        currentArg.setLength(0); // Limpiamos para el siguiente
-                        touchedArg = false;
+                // Caso C: FUERA de comillas (TU ERROR ACTUAL)
+                else {
+                    // Aquí la barra escapa CUALQUIER COSA (incluyendo el espacio)
+                    if (i + 1 < input.length()) {
+                        currentArg.append(input.charAt(i + 1));
+                        i++; // Importante: saltar el carácter que acabamos de agregar
                     }
-                } else {
-                    // Carácter normal (ej: la palabra script o shell)
-                    currentArg.append(c);
-                    touchedArg = true;
                 }
+            }
+            // 2. MANEJO DE COMILLAS
+            else if (c == '\'' && !inDoubleQuotes) {
+                inSingleQuotes = !inSingleQuotes;
+            }
+            else if (c == '"' && !inSingleQuotes) {
+                inDoubleQuotes = !inDoubleQuotes;
+            }
+            // 3. MANEJO DE ESPACIOS (Separadores)
+            else if (c == ' ' && !inSingleQuotes && !inDoubleQuotes) {
+                if (currentArg.length() > 0) {
+                    args.add(currentArg.toString());
+                    currentArg.setLength(0); // Reseteamos el buffer
+                }
+            }
+            // 4. CARACTERES NORMALES
+            else {
+                currentArg.append(c);
             }
         }
 
-        // Agregar el último argumento si quedó algo pendiente
-        if (currentArg.length() > 0 || touchedArg) {
+        // Agregar el último argumento si quedó pendiente
+        if (currentArg.length() > 0) {
             args.add(currentArg.toString());
         }
 
