@@ -24,7 +24,6 @@ public class Main {
 
 
             if (input.equals("echo")) {
-                //String cmdToSearch = input.substring(5).trim();
                 Fn.echo(commandWithArgs);
             }
             else if (input.startsWith("type ")) {

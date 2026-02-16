@@ -39,24 +39,71 @@ public class Fn {
     }
 
     public static String[] parseArguments(String input) {
-        List<String> matchList = new ArrayList<>();
-        // Esta Regex captura:
-        // Grupo 1: Contenido dentro de comillas simples '...'
-        // Grupo 2: Contenido dentro de comillas dobles "..."
-        // Grupo 3: Palabras normales sin comillas
-        Pattern regex = Pattern.compile("'([^']*)'|\"([^\"]*)\"|(\\S+)");
-        Matcher regexMatcher = regex.matcher(input);
+        java.util.List<String> args = new java.util.ArrayList<>();
+        StringBuilder currentArg = new StringBuilder();
+        boolean inSingleQuotes = false;
+        boolean inDoubleQuotes = false;
 
-        while (regexMatcher.find()) {
-            if (regexMatcher.group(1) != null) {
-                matchList.add(regexMatcher.group(1)); // Añade lo de adentro de las comillas simples
-            } else if (regexMatcher.group(2) != null) {
-                matchList.add(regexMatcher.group(2)); // Añade lo de adentro de las comillas dobles
+        // Este flag sirve para detectar cadenas vacías explícitas como "" o ''
+        // Si abrimos comillas, ya cuenta como que "tocamos" el argumento.
+        boolean touchedArg = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (inSingleQuotes) {
+                if (c == '\'') {
+                    inSingleQuotes = false; // Cerramos comilla simple
+                } else {
+                    currentArg.append(c);   // Todo lo de adentro se guarda literal
+                }
+            } else if (inDoubleQuotes) {
+                if (c == '\"') {
+                    inDoubleQuotes = false; // Cerramos comilla doble
+                } else if (c == '\\') {
+                    // (Opcional) Aquí iría la lógica de escapes dentro de dobles comillas
+                    // Para este test en específico, a veces hay que manejar \" o \\
+                    // Si el test te falla con backslash, avísame para agregar eso.
+                    if (i + 1 < input.length()) {
+                        char nextChar = input.charAt(i + 1);
+                        // Escapar solo caracteres especiales si es necesario
+                        currentArg.append(nextChar);
+                        i++;
+                    } else {
+                        currentArg.append(c);
+                    }
+                } else {
+                    currentArg.append(c);
+                }
             } else {
-                matchList.add(regexMatcher.group(3)); // Añade la palabra normal
+                // NO estamos entre comillas
+                if (c == '\'') {
+                    inSingleQuotes = true;
+                    touchedArg = true; // Marcamos que este argumento existe (aunque esté vacío)
+                } else if (c == '\"') {
+                    inDoubleQuotes = true;
+                    touchedArg = true;
+                } else if (c == ' ') {
+                    // El espacio FUERA de comillas es lo único que separa argumentos
+                    if (currentArg.length() > 0 || touchedArg) {
+                        args.add(currentArg.toString());
+                        currentArg.setLength(0); // Limpiamos para el siguiente
+                        touchedArg = false;
+                    }
+                } else {
+                    // Carácter normal (ej: la palabra script o shell)
+                    currentArg.append(c);
+                    touchedArg = true;
+                }
             }
         }
-        return matchList.toArray(new String[0]);
+
+        // Agregar el último argumento si quedó algo pendiente
+        if (currentArg.length() > 0 || touchedArg) {
+            args.add(currentArg.toString());
+        }
+
+        return args.toArray(new String[0]);
     }
 
     public static boolean echo(String[] command) {
