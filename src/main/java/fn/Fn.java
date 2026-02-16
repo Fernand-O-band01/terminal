@@ -4,6 +4,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Fn {
 
@@ -32,6 +36,42 @@ public class Fn {
             }
         }
         return null;
+    }
+
+    public static String[] parseArguments(String input) {
+        List<String> matchList = new ArrayList<>();
+        // Esta Regex captura:
+        // Grupo 1: Contenido dentro de comillas simples '...'
+        // Grupo 2: Contenido dentro de comillas dobles "..."
+        // Grupo 3: Palabras normales sin comillas
+        Pattern regex = Pattern.compile("'([^']*)'|\"([^\"]*)\"|(\\S+)");
+        Matcher regexMatcher = regex.matcher(input);
+
+        while (regexMatcher.find()) {
+            if (regexMatcher.group(1) != null) {
+                matchList.add(regexMatcher.group(1)); // Añade lo de adentro de las comillas simples
+            } else if (regexMatcher.group(2) != null) {
+                matchList.add(regexMatcher.group(2)); // Añade lo de adentro de las comillas dobles
+            } else {
+                matchList.add(regexMatcher.group(3)); // Añade la palabra normal
+            }
+        }
+        return matchList.toArray(new String[0]);
+    }
+
+    public static boolean echo(String[] command) {
+        StringBuilder sb = new StringBuilder();
+        // Empezamos en 1 porque el 0 es "echo"
+        for (int i = 1; i < command.length; i++) {
+            sb.append(command[i]);
+
+            // Solo agregamos espacio si NO es el último argumento
+            if (i < command.length - 1) {
+                sb.append(" ");
+            }
+        }
+        System.out.println(sb.toString());
+        return true;
     }
 
     public static boolean ChangeDirectory(String[] command){

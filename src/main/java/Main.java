@@ -12,16 +12,20 @@ public class Main {
 
             System.out.print("$ ");
             String input = scanner.nextLine();
-            String[] commandWithArgs = input.trim().split("\\s+");
+            String[] commandWithArgs = Fn.parseArguments(input);
 
             if (input.equals("exit")) {
                 break;
             }
+            if (commandWithArgs.length == 0) {
+                continue;
+            }
 
 
 
-            if (input.startsWith("echo ")) {
-                System.out.println(input.substring(5).trim());
+            if (input.equals("echo")) {
+                //String cmdToSearch = input.substring(5).trim();
+                Fn.echo(commandWithArgs);
             }
             else if (input.startsWith("type ")) {
                 String cmdToSearch = input.substring(5).trim();
